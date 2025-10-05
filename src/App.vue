@@ -1,48 +1,23 @@
 <template>
   <div id="app">
-    <header class="header">
-      <h1>💰 Учёт финансов</h1>
-    </header>
-
-    <main class="main-content">
-      <div class="container">
-        <BalanceDisplay />
-
-        <div class="grid">
-          <div class="column">
-            <TransactionForm />
-            <TransactionList />
-          </div>
-
-          <div class="column">
-            <CategoryChart />
-          </div>
-        </div>
-      </div>
-    </main>
+    <AppNavigation />
+    <router-view />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import BalanceDisplay from './components/BalanceDisplay.vue'
-import TransactionForm from './components/TransactionForm.vue'
-import TransactionList from './components/TransactionList.vue'
-import CategoryChart from './components/CategoryChart.vue'
+import AppNavigation from './components/AppNavigation.vue'
 
 export default defineComponent({
   name: 'App',
   components: {
-    BalanceDisplay,
-    TransactionForm,
-    TransactionList,
-    CategoryChart,
+    AppNavigation,
   },
 })
 </script>
 
 <style>
-/* Стили остаются такими же */
 * {
   margin: 0;
   padding: 0;
@@ -53,43 +28,39 @@ body {
   font-family: 'Arial', sans-serif;
   background-color: #f5f5f5;
   color: #333;
+  line-height: 1.6;
 }
 
-.header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1rem 0;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+#app {
+  min-height: 100vh;
 }
 
-.main-content {
-  padding: 2rem 0;
+/* Общие стили для кнопок */
+button {
+  font-family: inherit;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+/* Убираем стандартные стили для ссылок */
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 2rem;
+/* Стили для скроллбара */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-.column {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 </style>
