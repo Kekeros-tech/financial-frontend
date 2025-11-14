@@ -1,20 +1,10 @@
+<!-- src/App.vue -->
 <template>
-  <div id="app">
-    <AppNavigation />
-    <router-view />
-  </div>
+  <AppLayout />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import AppNavigation from './components/AppNavigation.vue'
-
-export default defineComponent({
-  name: 'App',
-  components: {
-    AppNavigation,
-  },
-})
+<script setup lang="ts">
+import AppLayout from './components/layout/AppLayout.vue'
 </script>
 
 <style>
@@ -25,42 +15,20 @@ export default defineComponent({
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
-  line-height: 1.6;
-}
-
-#app {
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  background: linear-gradient(to bottom right, #f8fafc, #e0f2fe);
   min-height: 100vh;
+  padding-bottom: 5rem; /* для мобильного навигационного меню */
 }
 
-/* Общие стили для кнопок */
-button {
-  font-family: inherit;
-}
-
-/* Убираем стандартные стили для ссылок */
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Стили для скроллбара */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
 }
 </style>
