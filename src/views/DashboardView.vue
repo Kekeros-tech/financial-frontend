@@ -26,53 +26,12 @@
     />
 
     <!-- Budget Limits Section -->
-    <div class="card card--budget-limits mb-8">
-      <div class="section-header">
-        <h2 class="section-title">Budget Limits</h2>
-        <button class="btn-manage">Manage Budgets</button>
-      </div>
-      <div class="budget-limits-list">
-        <div v-for="budget in budgetLimits" :key="budget.id" class="budget-limit-item">
-          <div class="budget-limit-header">
-            <div class="budget-limit-category">
-              <component
-                :is="isOverLimit(budget) ? AlertTriangle : Goal"
-                class="budget-limit-icon"
-                :class="isOverLimit(budget) ? 'text-red-500' : 'text-gray-500'"
-              />
-              <h3 class="budget-limit-name">{{ budget.category }}</h3>
-            </div>
-            <div class="budget-limit-amounts">
-              <p
-                :class="[
-                  'budget-limit-spent',
-                  isOverLimit(budget) ? 'text-red-600' : 'text-gray-800',
-                ]"
-              >
-                {{ formatCurrency(budget.spent) }}
-              </p>
-              <p class="budget-limit-limit">of {{ formatCurrency(budget.limit) }}</p>
-            </div>
-          </div>
-          <div class="budget-progress">
-            <div class="progress-bg">
-              <div
-                class="progress-bar"
-                :class="budget.color"
-                :style="{ width: `${getPercentage(budget)}%` }"
-              ></div>
-              <div v-if="isOverLimit(budget)" class="progress-over-indicator">
-                <AlertTriangle class="progress-over-icon" />
-              </div>
-            </div>
-            <div class="progress-text">
-              <span class="progress-percent">{{ Math.round(getPercentage(budget)) }}% used</span>
-              <span v-if="isOverLimit(budget)" class="progress-over">Over limit!</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <BudgetLimitsList
+      :budgets="budgetLimits"
+      title="Budget Limits"
+      :format-currency="formatCurrency"
+      @show-all="setActivePage('budgets')"
+    />
 
     <!-- Quick Actions -->
     <div class="quick-actions-grid">
@@ -93,12 +52,10 @@
 <script setup lang="ts">
 import { useNavigationStore } from '@/stores/navigationStore'
 import { useFinancialData } from '@/composables/useFinancialData'
-import { BudgetLimit } from '@/types'
 import BudgetOverview from '@/components/layout/BudgetOverview.vue'
 import RecentTransactions from '@/components/layout/RecentTransactions.vue'
 import AccountsList from '@/components/layout/AccountsList.vue'
-import { AlertTriangle, Goal } from 'lucide-vue-next'
-import PeriodSelector from '@/components/ui/PeriodSelector.vue'
+import BudgetLimitsList from '@/components/layout/BudgetLimitsList.vue'
 
 const navigationStore = useNavigationStore()
 
@@ -116,14 +73,6 @@ const {
 
 const setActivePage = (pageId: string) => {
   navigationStore.setActivePage(pageId)
-}
-
-const getPercentage = (budget: BudgetLimit) => {
-  return Math.min((budget.spent / budget.limit) * 100, 100)
-}
-
-const isOverLimit = (budget: BudgetLimit) => {
-  return budget.spent > budget.limit
 }
 </script>
 
