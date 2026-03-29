@@ -21,6 +21,8 @@ export type IconName =
   | 'piggy-bank'
   | 'help-circle'
   | 'landmark'
+  | 'alert-triangle'
+  | 'goal'
 
 export type AccountType = 'checking' | 'savings' | 'credit' | 'investment'
 export type TransactionType = 'income' | 'expense' | 'transfer'
