@@ -122,7 +122,6 @@ onBeforeUnmount(() => {
   background: linear-gradient(to bottom right, #f8fafc, #e0f2fe);
   display: flex;
   flex-direction: column;
-  padding-bottom: 64px; /* Для мобильной нижней навигации */
 }
 
 @media (min-width: 768px) {

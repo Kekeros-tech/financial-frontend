@@ -34,18 +34,22 @@
     />
 
     <!-- Quick Actions -->
-    <div class="quick-actions-grid">
-      <div class="quick-action bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-        <h3 class="quick-action-title">Add New Transaction</h3>
-        <p class="quick-action-desc">Record your income or expenses quickly</p>
-        <button class="btn-quick-action text-blue-600">Add Transaction</button>
-      </div>
-      <div class="quick-action bg-gradient-to-r from-green-500 to-green-600 text-white">
-        <h3 class="quick-action-title">Set Budget Goals</h3>
-        <p class="quick-action-desc">Plan your monthly spending and savings</p>
-        <button class="btn-quick-action text-green-600">Create Budget</button>
-      </div>
-    </div>
+    <QuickActionsList
+      :actions="[
+        {
+          title: 'Add New Transaction',
+          description: 'Record your income or expenses quickly',
+          buttonText: 'Add Transaction',
+          color: 'blue',
+        },
+        {
+          title: 'Set Budget Goals',
+          description: 'Plan your monthly spending and savings',
+          buttonText: 'Create Budget',
+          color: 'green',
+        },
+      ]"
+    />
   </div>
 </template>
 
@@ -56,6 +60,7 @@ import BudgetOverview from '@/components/layout/BudgetOverview.vue'
 import RecentTransactions from '@/components/layout/RecentTransactions.vue'
 import AccountsList from '@/components/layout/AccountsList.vue'
 import BudgetLimitsList from '@/components/layout/BudgetLimitsList.vue'
+import QuickActionsList from '@/components/layout/QuickActionsList.vue'
 
 const navigationStore = useNavigationStore()
 
@@ -417,50 +422,6 @@ const setActivePage = (pageId: string) => {
 }
 
 /* ========== Блок быстрых действий ========== */
-.quick-actions-grid {
-  display: grid;
-  grid-template-columns: 1fr; /* grid-cols-1 */
-  gap: 1.5rem; /* gap-6 */
-  margin-top: 2rem; /* mt-8 */
-}
-
-@media (min-width: 768px) {
-  .quick-actions-grid {
-    grid-template-columns: repeat(2, 1fr); /* md:grid-cols-2 */
-  }
-}
-
-.quick-action {
-  border-radius: 1rem; /* rounded-2xl */
-  padding: 1.5rem; /* p-6 */
-  color: white;
-}
-
-.quick-action-title {
-  font-size: 1.25rem; /* text-xl */
-  font-weight: 700; /* font-bold */
-  margin: 0 0 0.5rem; /* mb-2 */
-}
-
-.quick-action-desc {
-  color: rgba(255, 255, 255, 0.8); /* text-blue-100 или text-green-100 */
-  margin: 0 0 1rem; /* mb-4 */
-}
-
-.btn-quick-action {
-  padding: 0.5rem 1rem; /* px-4 py-2 */
-  background: white;
-  color: #2563eb; /* text-blue-600 */
-  border: none;
-  border-radius: 0.5rem; /* rounded-lg */
-  font-weight: 500; /* font-medium */
-  cursor: pointer;
-  transition: background 0.2s ease; /* transition-colors */
-}
-
-.btn-quick-action:hover {
-  background: #dbeafe; /* hover:bg-blue-50 */
-}
 
 /* ========== Цвета ========== */
 .text-blue-700 {
