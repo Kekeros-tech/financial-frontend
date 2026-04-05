@@ -23,6 +23,9 @@ export type IconName =
   | 'landmark'
   | 'alert-triangle'
   | 'goal'
+  | 'calendar'
+  | 'chevron-left'
+  | 'chevron-right'
 
 export type AccountType = 'checking' | 'savings' | 'credit' | 'investment'
 export type TransactionType = 'income' | 'expense' | 'transfer'
