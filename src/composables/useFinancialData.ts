@@ -1,272 +1,259 @@
 // src/composables/useFinancialData.ts
-import { ref, computed, watch } from 'vue'
-import { Period, PeriodData, Transaction, BudgetLimit, Account } from '@/types'
+import { ref, computed } from 'vue'
+import { Transaction, BudgetLimit, Account } from '@/types'
 
-const periodData: Record<Period, PeriodData> = {
-  week: {
-    balance: 8500,
-    income: 3200,
-    expenses: 1800,
+interface MonthData {
+  balance: number
+  income: number
+  expenses: number
+  transactions: Transaction[]
+  budgetLimits: BudgetLimit[]
+}
+
+// Тестовые данные для месяцев: январь — апрель 2026
+const monthData: Record<number, MonthData> = {
+  0: {
+    balance: 45000,
+    income: 85000,
+    expenses: 40000,
     transactions: [
       {
         id: 1,
         type: 'income',
-        amount: 2000,
-        category: 'Freelance',
-        date: '2024-01-18',
-        description: 'Project payment',
+        amount: 75000,
+        category: 'Зарплата',
+        date: '2026-01-15',
+        description: 'Январская зарплата',
       },
       {
         id: 2,
-        type: 'expense',
-        amount: 450,
-        category: 'Groceries',
-        date: '2024-01-17',
-        description: 'Weekly shopping',
-      },
-      {
-        id: 3,
-        type: 'expense',
-        amount: 320,
-        category: 'Transport',
-        date: '2024-01-16',
-        description: 'Gas and parking',
-      },
-    ],
-  },
-  month: {
-    balance: 12500,
-    income: 8500,
-    expenses: 3200,
-    transactions: [
-      {
-        id: 1,
-        type: 'income',
-        amount: 5000,
-        category: 'Salary',
-        date: '2024-01-15',
-        description: 'Monthly salary',
-      },
-      {
-        id: 2,
-        type: 'expense',
-        amount: 1200,
-        category: 'Rent',
-        date: '2024-01-14',
-        description: 'Apartment rent',
-      },
-      {
-        id: 3,
-        type: 'expense',
-        amount: 450,
-        category: 'Groceries',
-        date: '2024-01-13',
-        description: 'Weekly shopping',
-      },
-      {
-        id: 4,
-        type: 'income',
-        amount: 2000,
-        category: 'Freelance',
-        date: '2024-01-12',
-        description: 'Project payment',
-      },
-      {
-        id: 5,
-        type: 'expense',
-        amount: 320,
-        category: 'Transport',
-        date: '2024-01-11',
-        description: 'Gas and parking',
-      },
-    ],
-  },
-  year: {
-    balance: 85000,
-    income: 120000,
-    expenses: 35000,
-    transactions: [
-      {
-        id: 1,
-        type: 'income',
-        amount: 50000,
-        category: 'Salary',
-        date: '2024-01-15',
-        description: 'Annual bonus',
-      },
-      {
-        id: 2,
-        type: 'expense',
-        amount: 15000,
-        category: 'Rent',
-        date: '2024-01-14',
-        description: 'Annual rent',
-      },
-      {
-        id: 3,
-        type: 'expense',
-        amount: 8500,
-        category: 'Travel',
-        date: '2024-01-10',
-        description: 'Vacation expenses',
-      },
-      {
-        id: 4,
-        type: 'income',
-        amount: 30000,
-        category: 'Investments',
-        date: '2024-01-08',
-        description: 'Investment returns',
-      },
-      {
-        id: 5,
-        type: 'expense',
-        amount: 6500,
-        category: 'Insurance',
-        date: '2024-01-05',
-        description: 'Annual insurance',
-      },
-    ],
-  },
-  quarter: {
-    balance: 28500,
-    income: 32000,
-    expenses: 8500,
-    transactions: [
-      {
-        id: 1,
-        type: 'income',
-        amount: 15000,
-        category: 'Salary',
-        date: '2024-03-15',
-        description: 'Q1 salary',
-      },
-      {
-        id: 2,
-        type: 'expense',
-        amount: 3600,
-        category: 'Rent',
-        date: '2024-03-14',
-        description: 'Q1 rent',
-      },
-      {
-        id: 3,
-        type: 'expense',
-        amount: 1200,
-        category: 'Utilities',
-        date: '2024-02-20',
-        description: 'Utilities Q1',
-      },
-      {
-        id: 4,
         type: 'income',
         amount: 10000,
-        category: 'Freelance',
-        date: '2024-02-10',
-        description: 'Q1 freelance',
+        category: 'Фриланс',
+        date: '2026-01-20',
+        description: 'Проект для клиента',
+      },
+      {
+        id: 3,
+        type: 'expense',
+        amount: 25000,
+        category: 'Аренда',
+        date: '2026-01-10',
+        description: 'Аренда квартиры',
+      },
+      {
+        id: 4,
+        type: 'expense',
+        amount: 8000,
+        category: 'Продукты',
+        date: '2026-01-18',
+        description: 'Еженедельные покупки',
       },
       {
         id: 5,
         type: 'expense',
-        amount: 900,
-        category: 'Subscriptions',
-        date: '2024-01-25',
-        description: 'Q1 subscriptions',
+        amount: 5000,
+        category: 'Транспорт',
+        date: '2026-01-12',
+        description: 'Бензин и парковка',
       },
+      {
+        id: 6,
+        type: 'expense',
+        amount: 2000,
+        category: 'Развлечения',
+        date: '2026-01-25',
+        description: 'Кино и рестораны',
+      },
+    ],
+    budgetLimits: [
+      { id: 1, category: 'Продукты', limit: 15000, spent: 8000, color: 'bg-green-500' },
+      { id: 2, category: 'Развлечения', limit: 5000, spent: 2000, color: 'bg-blue-500' },
+      { id: 3, category: 'Транспорт', limit: 8000, spent: 5000, color: 'bg-red-500' },
+      { id: 4, category: 'Рестораны', limit: 10000, spent: 4500, color: 'bg-purple-500' },
+      { id: 5, category: 'Покупки', limit: 20000, spent: 12000, color: 'bg-yellow-500' },
+    ],
+  },
+  1: {
+    balance: 52000,
+    income: 90000,
+    expenses: 38000,
+    transactions: [
+      {
+        id: 1,
+        type: 'income',
+        amount: 75000,
+        category: 'Зарплата',
+        date: '2026-02-15',
+        description: 'Февральская зарплата',
+      },
+      {
+        id: 2,
+        type: 'income',
+        amount: 15000,
+        category: 'Фриланс',
+        date: '2026-02-22',
+        description: 'Дизайн сайта',
+      },
+      {
+        id: 3,
+        type: 'expense',
+        amount: 25000,
+        category: 'Аренда',
+        date: '2026-02-10',
+        description: 'Аренда квартиры',
+      },
+      {
+        id: 4,
+        type: 'expense',
+        amount: 6500,
+        category: 'Продукты',
+        date: '2026-02-17',
+        description: 'Еженедельные покупки',
+      },
+      {
+        id: 5,
+        type: 'expense',
+        amount: 4000,
+        category: 'Транспорт',
+        date: '2026-02-14',
+        description: 'Бензин и парковка',
+      },
+      {
+        id: 6,
+        type: 'expense',
+        amount: 2500,
+        category: 'Развлечения',
+        date: '2026-02-20',
+        description: 'Подписки и сервисы',
+      },
+    ],
+    budgetLimits: [
+      { id: 1, category: 'Продукты', limit: 15000, spent: 6500, color: 'bg-green-500' },
+      { id: 2, category: 'Развлечения', limit: 5000, spent: 2500, color: 'bg-blue-500' },
+      { id: 3, category: 'Транспорт', limit: 8000, spent: 4000, color: 'bg-red-500' },
+      { id: 4, category: 'Рестораны', limit: 10000, spent: 7200, color: 'bg-purple-500' },
+      { id: 5, category: 'Покупки', limit: 20000, spent: 15000, color: 'bg-yellow-500' },
+    ],
+  },
+  2: {
+    balance: 68000,
+    income: 95000,
+    expenses: 27000,
+    transactions: [
+      {
+        id: 1,
+        type: 'income',
+        amount: 75000,
+        category: 'Зарплата',
+        date: '2026-03-15',
+        description: 'Мартовская зарплата',
+      },
+      {
+        id: 2,
+        type: 'income',
+        amount: 20000,
+        category: 'Инвестиции',
+        date: '2026-03-20',
+        description: 'Дивиденды',
+      },
+      {
+        id: 3,
+        type: 'expense',
+        amount: 25000,
+        category: 'Аренда',
+        date: '2026-03-10',
+        description: 'Аренда квартиры',
+      },
+      {
+        id: 4,
+        type: 'expense',
+        amount: 1200,
+        category: 'Транспорт',
+        date: '2026-03-08',
+        description: 'Общественный транспорт',
+      },
+    ],
+    budgetLimits: [
+      { id: 1, category: 'Продукты', limit: 15000, spent: 0, color: 'bg-green-500' },
+      { id: 2, category: 'Развлечения', limit: 5000, spent: 0, color: 'bg-blue-500' },
+      { id: 3, category: 'Транспорт', limit: 8000, spent: 1200, color: 'bg-red-500' },
+      { id: 4, category: 'Рестораны', limit: 10000, spent: 3500, color: 'bg-purple-500' },
+      { id: 5, category: 'Покупки', limit: 20000, spent: 18000, color: 'bg-yellow-500' },
+    ],
+  },
+  3: {
+    balance: 75000,
+    income: 105000,
+    expenses: 30000,
+    transactions: [
+      {
+        id: 1,
+        type: 'income',
+        amount: 75000,
+        category: 'Зарплата',
+        date: '2026-04-15',
+        description: 'Апрельская зарплата',
+      },
+      {
+        id: 2,
+        type: 'income',
+        amount: 30000,
+        category: 'Фриланс',
+        date: '2026-04-22',
+        description: 'Разработка приложения',
+      },
+      {
+        id: 3,
+        type: 'expense',
+        amount: 25000,
+        category: 'Аренда',
+        date: '2026-04-10',
+        description: 'Аренда квартиры',
+      },
+      {
+        id: 4,
+        type: 'expense',
+        amount: 3500,
+        category: 'Продукты',
+        date: '2026-04-18',
+        description: 'Еженедельные покупки',
+      },
+      {
+        id: 5,
+        type: 'expense',
+        amount: 1500,
+        category: 'Развлечения',
+        date: '2026-04-20',
+        description: 'Подписки',
+      },
+    ],
+    budgetLimits: [
+      { id: 1, category: 'Продукты', limit: 15000, spent: 3500, color: 'bg-green-500' },
+      { id: 2, category: 'Развлечения', limit: 5000, spent: 1500, color: 'bg-blue-500' },
+      { id: 3, category: 'Транспорт', limit: 8000, spent: 0, color: 'bg-red-500' },
+      { id: 4, category: 'Рестораны', limit: 10000, spent: 6200, color: 'bg-purple-500' },
+      { id: 5, category: 'Покупки', limit: 20000, spent: 19500, color: 'bg-yellow-500' },
     ],
   },
 }
 
 export const useFinancialData = () => {
-  const selectedPeriod = ref<Period>('month')
-  const balance = ref(12500)
-  const income = ref(8500)
-  const expenses = ref(3200)
-  const transactions = ref<Transaction[]>(periodData.month.transactions)
+  const currentMonth = ref(3) // Апрель (индекс 3)
+
   const accounts = ref<Account[]>([
-    {
-      id: 1,
-      name: 'Основной счёт',
-      type: 'checking',
-      balance: 125000,
-      currency: '₽',
-      status: 'active',
-    },
-    {
-      id: 2,
-      name: 'Накопления',
-      type: 'savings',
-      balance: 500000,
-      currency: '₽',
-    },
-    {
-      id: 3,
-      name: 'Накопления',
-      type: 'investment',
-      balance: 500000,
-      currency: '₽',
-    },
+    { id: 1, name: 'Основной счёт', type: 'checking', balance: 125000, currency: '₽' },
+    { id: 2, name: 'Накопления', type: 'savings', balance: 500000, currency: '₽' },
+    { id: 3, name: 'Инвестиции', type: 'investment', balance: 350000, currency: '₽' },
   ])
 
-  const budgetLimits = computed<BudgetLimit[]>(() => {
-    const period = selectedPeriod.value
-    return [
-      {
-        id: 1,
-        category: 'Groceries',
-        limit:
-          period === 'week' ? 500 : period === 'month' ? 2000 : period === 'quarter' ? 6000 : 24000,
-        spent:
-          period === 'week' ? 350 : period === 'month' ? 1450 : period === 'quarter' ? 4200 : 18000,
-        color: 'bg-green-500',
-      },
-      {
-        id: 2,
-        category: 'Entertainment',
-        limit:
-          period === 'week' ? 250 : period === 'month' ? 1000 : period === 'quarter' ? 3000 : 12000,
-        spent:
-          period === 'week' ? 200 : period === 'month' ? 850 : period === 'quarter' ? 2400 : 9500,
-        color: 'bg-blue-500',
-      },
-      {
-        id: 3,
-        category: 'Transport',
-        limit:
-          period === 'week' ? 375 : period === 'month' ? 1500 : period === 'quarter' ? 4500 : 18000,
-        spent:
-          period === 'week' ? 400 : period === 'month' ? 1620 : period === 'quarter' ? 5200 : 20000,
-        color: 'bg-red-500',
-      },
-      {
-        id: 4,
-        category: 'Dining Out',
-        limit:
-          period === 'week' ? 625 : period === 'month' ? 2500 : period === 'quarter' ? 7500 : 30000,
-        spent:
-          period === 'week' ? 450 : period === 'month' ? 1800 : period === 'quarter' ? 5800 : 25000,
-        color: 'bg-purple-500',
-      },
-      {
-        id: 5,
-        category: 'Shopping',
-        limit:
-          period === 'week' ? 750 : period === 'month' ? 3000 : period === 'quarter' ? 9000 : 36000,
-        spent:
-          period === 'week' ? 700 : period === 'month' ? 2800 : period === 'quarter' ? 8500 : 32000,
-        color: 'bg-yellow-500',
-      },
-    ]
-  })
+  const monthDataForCurrentMonth = computed(() => monthData[currentMonth.value])
 
-  // Обновляем данные при смене периода
-  watch(selectedPeriod, (newPeriod) => {
-    const data = periodData[newPeriod]
-    balance.value = data.balance
-    income.value = data.income
-    expenses.value = data.expenses
-    transactions.value = data.transactions
-  })
+  const balance = computed(() => monthDataForCurrentMonth.value.balance)
+  const income = computed(() => monthDataForCurrentMonth.value.income)
+  const expenses = computed(() => monthDataForCurrentMonth.value.expenses)
+  const transactions = computed(() => monthDataForCurrentMonth.value.transactions)
+  const budgetLimits = computed(() => monthDataForCurrentMonth.value.budgetLimits)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ru-RU', {
@@ -278,7 +265,7 @@ export const useFinancialData = () => {
   }
 
   return {
-    selectedPeriod,
+    currentMonth,
     balance,
     income,
     expenses,

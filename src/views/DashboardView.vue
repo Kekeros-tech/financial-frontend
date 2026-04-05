@@ -2,12 +2,7 @@
 <template>
   <div>
     <!-- Period Selector -->
-    <div class="card card--overview mb-8">
-      <div class="overview-header">
-        <h2 class="overview-title">Financial Overview</h2>
-        <PeriodSelector v-model:selected-period="selectedPeriod" />
-      </div>
-    </div>
+    <PeriodSelector v-model:current-month="currentMonth" />
 
     <!-- Budget Overview Section -->
     <BudgetOverview :total-balance="balance" :total-income="income" :total-expenses="expenses" />
@@ -61,12 +56,13 @@ import RecentTransactions from '@/components/layout/RecentTransactions.vue'
 import AccountsList from '@/components/layout/AccountsList.vue'
 import BudgetLimitsList from '@/components/layout/BudgetLimitsList.vue'
 import QuickActionsList from '@/components/layout/QuickActionsList.vue'
+import PeriodSelector from '@/components/layout/PeriodSelector.vue'
 
 const navigationStore = useNavigationStore()
 
 // Используем данные из composables
 const {
-  selectedPeriod,
+  currentMonth,
   balance,
   income,
   expenses,
@@ -93,31 +89,7 @@ const setActivePage = (pageId: string) => {
     0 2px 4px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
 }
 
-.mb-8 {
-  margin-bottom: 2rem;
-}
-
 /* ========== Заголовки и навигация ========== */
-.overview-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .overview-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
-.overview-title {
-  font-size: 1.5rem; /* text-2xl */
-  font-weight: 700; /* font-bold */
-  color: #1f2937; /* text-gray-800 */
-  margin: 0;
-}
 
 .section-header {
   display: flex;
