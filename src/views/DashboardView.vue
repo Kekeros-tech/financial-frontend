@@ -9,6 +9,8 @@
 
     <AccountsList
       :accounts="accounts"
+      :loading="isLoadingAccounts"
+      :error="accountsError"
       title="My accounts"
       compact
       @show-all="setActivePage('accounts')"
@@ -49,8 +51,10 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useNavigationStore } from '@/stores/navigationStore'
 import { useFinancialData } from '@/composables/useFinancialData'
+import { useAccounts } from '@/composables/useAccounts'
 import BudgetOverview from '@/components/layout/BudgetOverview.vue'
 import RecentTransactions from '@/components/layout/RecentTransactions.vue'
 import AccountsList from '@/components/layout/AccountsList.vue'
@@ -61,16 +65,20 @@ import PeriodSelector from '@/components/layout/PeriodSelector.vue'
 const navigationStore = useNavigationStore()
 
 // Используем данные из composables
+const { currentMonth, balance, income, expenses, transactions, budgetLimits, formatCurrency } =
+  useFinancialData()
+
+// Загружаем аккаунты с бэкенда
 const {
-  currentMonth,
-  balance,
-  income,
-  expenses,
-  transactions,
   accounts,
-  budgetLimits,
-  formatCurrency,
-} = useFinancialData()
+  isLoading: isLoadingAccounts,
+  error: accountsError,
+  fetchAccounts,
+} = useAccounts()
+
+onMounted(async () => {
+  await fetchAccounts()
+})
 
 const setActivePage = (pageId: string) => {
   navigationStore.setActivePage(pageId)

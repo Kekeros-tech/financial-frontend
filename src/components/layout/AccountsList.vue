@@ -11,11 +11,15 @@ interface Props {
   title?: string
   collapsed?: boolean
   compact?: boolean
+  loading?: boolean
+  error?: string | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
   collapsed: false,
   compact: false,
+  loading: false,
+  error: null,
 })
 
 const emit = defineEmits<{
@@ -55,31 +59,46 @@ const handleShowAll = () => {
 
     <!-- Список счетов -->
     <div v-if="isExpanded" :class="['accounts-list', { 'accounts-list--compact': compact }]">
-      <template v-if="compact">
-        <CompactAccountCard
-          v-for="account in accounts"
-          :key="account.id"
-          :name="account.name"
-          :type="account.type"
-          :balance="account.balance"
-          :currency="account.currency"
-          :icon="account.icon"
-        />
-      </template>
-      <template v-else>
-        <AccountCard
-          v-for="account in accounts"
-          :key="account.id"
-          :name="account.name"
-          :type="account.type"
-          :balance="account.balance"
-          :currency="account.currency"
-          :status="account.status"
-          :icon="account.icon"
-        />
-      </template>
+      <!-- Состояние загрузки -->
+      <div v-if="loading" class="accounts-loading">
+        <div class="spinner"></div>
+        <span>Загрузка счетов...</span>
+      </div>
 
-      <div v-if="accounts.length === 0" class="no-accounts">Нет доступных счетов</div>
+      <!-- Состояние ошибки -->
+      <div v-else-if="error" class="accounts-error">
+        <p>Ошибка загрузки счетов</p>
+        <p class="accounts-error__message">{{ error }}</p>
+      </div>
+
+      <!-- Список счетов -->
+      <template v-else>
+        <template v-if="compact">
+          <CompactAccountCard
+            v-for="account in accounts"
+            :key="account.id"
+            :name="account.name"
+            :type="account.type"
+            :balance="account.balance"
+            :currency="account.currency"
+            :icon="account.icon"
+          />
+        </template>
+        <template v-else>
+          <AccountCard
+            v-for="account in accounts"
+            :key="account.id"
+            :name="account.name"
+            :type="account.type"
+            :balance="account.balance"
+            :currency="account.currency"
+            :status="account.status"
+            :icon="account.icon"
+          />
+        </template>
+
+        <div v-if="accounts.length === 0" class="no-accounts">Нет доступных счетов</div>
+      </template>
     </div>
   </div>
 </template>
@@ -129,6 +148,49 @@ const handleShowAll = () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+/* Состояние загрузки */
+.accounts-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+  color: #6b7280;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Состояние ошибки */
+.accounts-error {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #dc2626;
+}
+
+.accounts-error p {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.accounts-error__message {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 400;
 }
 
 .no-accounts {
